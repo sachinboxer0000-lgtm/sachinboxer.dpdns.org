@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factora — Discover Facts That Will Blow Your Mind</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d16',
+                        darkCard: '#131c31',
+                        darkBorder: '#1e293b',
+                        brandPurple: '#8b5cf6',
+                        brandCyan: '#06b6d4',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Custom smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-purple-500 selection:text-white">
+
+    <!-- Header / Navigation -->
+    <header class="sticky top-0 z-50 bg-slate-950/80 glass-panel border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2 group" onclick="resetFilter()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-purple-500/25 group-hover:scale-105 transition-transform duration-300">
+                    <i class="fa-solid fa-lightbulb text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                    FACTOR<span class="text-purple-500">A</span>
+                </span>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <a href="#" onclick="resetFilter()" class="hover:text-purple-400 transition-colors">Home</a>
+                <a href="#categories" class="hover:text-purple-400 transition-colors">Categories</a>
+                <a href="#trending" class="hover:text-purple-400 transition-colors">Trending</a>
+                <a href="#bookmarks" onclick="openBookmarksModal()" class="hover:text-purple-400 transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-bookmark text-purple-400"></i> Saved <span id="bookmark-badge" class="bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">0</span>
+                </a>
+                <a href="#about" class="hover:text-purple-400 transition-colors">About</a>
+            </nav>
+
+            <!-- Right Controls -->
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" aria-label="Toggle theme" class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 transition-all">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+                </button>
+
+                <!-- Random Fact Quick Button -->
+                <button onclick="triggerRandomFactModal()" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold shadow-lg shadow-purple-600/20 hover:shadow-purple-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <i class="fa-solid fa-dice"></i>
+                    <span>Random Fact</span>
+                </button>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" aria-label="Open Mobile Menu" class="md:hidden w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-900/95 border-b border-slate-800 px-6 py-4 space-y-3">
+            <a href="#" onclick="resetFilter(); toggleMobileMenu();" class="block text-slate-200 hover:text-purple-400 font-medium py-1">Home</a>
+            <a href="#categories" onclick="toggleMobileMenu();" class="block text-slate-200 hover:text-purple-400 font-medium py-1">Categories</a>
+            <a href="#trending" onclick="toggleMobileMenu();" class="block text-slate-200 hover:text-purple-400 font-medium py-1">Trending</a>
+            <a href="#bookmarks" onclick="openBookmarksModal(); toggleMobileMenu();" class="block text-slate-200 hover:text-purple-400 font-medium py-1">Saved Facts</a>
+            <a href="#about" onclick="toggleMobileMenu();" class="block text-slate-200 hover:text-purple-400 font-medium py-1">About</a>
+            <button onclick="triggerRandomFactModal(); toggleMobileMenu();" class="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm">
+                <i class="fa-solid fa-dice mr-2"></i> Random Fact
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden pt-16 pb-20 px-4 sm:px-6 lg:px-8 border-b border-slate-900">
+        <!-- Glow background accents -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/3 left-1/4 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold mb-6 uppercase tracking-wider">
+                <i class="fa-solid fa-bolt text-amber-400"></i> Over 500+ Curated Mind-Blowers
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                Discover Facts That Will <br class="hidden sm:inline" />
+                <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">Blow Your Mind 🤯</span>
+            </h1>
+            <p class="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                Explore fascinating, verified trivia across science, space, history, human body, and the mysterious corners of our universe.
+            </p>
+
+            <!-- Search Bar -->
+            <div class="max-w-2xl mx-auto relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-cyan-500 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                <div class="relative flex items-center bg-slate-900 border border-slate-800 rounded-2xl p-2 shadow-2xl">
+                    <div class="pl-4 text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </div>
+                    <input type="text" id="search-input" placeholder="Search interesting facts (e.g. black holes, pyramids, octopuses)..." 
+                           class="w-full bg-transparent px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none text-base">
+                    <button id="clear-search" class="hidden pr-3 text-slate-400 hover:text-white" onclick="clearSearch()">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                    <button onclick="handleSearch()" class="bg-purple-600 hover:bg-purple-500 text-white font-medium px-6 py-3 rounded-xl transition-all shadow-md shadow-purple-600/30">
+                        Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats/Tags -->
+            <div class="flex flex-wrap items-center justify-center gap-3 mt-8 text-xs text-slate-400">
+                <span class="text-slate-500 font-medium">Trending searches:</span>
+                <button onclick="quickSearch('Space')" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-purple-500 hover:text-purple-400 transition-all">🌌 Space</button>
+                <button onclick="quickSearch('Brain')" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-purple-500 hover:text-purple-400 transition-all">🧠 Human Body</button>
+                <button onclick="quickSearch('History')" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-purple-500 hover:text-purple-400 transition-all">📜 History</button>
+                <button onclick="quickSearch('Animal')" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-purple-500 hover:text-purple-400 transition-all">🐾 Animals</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+                    <i class="fa-solid fa-layer-group text-purple-500 text-2xl"></i> Explore Categories
+                </h2>
+                <p class="text-slate-400 text-sm mt-1">Dive deep into your favorite scientific or historical domain</p>
+            </div>
+            <button onclick="resetFilter()" id="all-cats-btn" class="hidden text-xs font-semibold px-4 py-2 rounded-lg bg-purple-600/20 text-purple-400 border border-purple-500/30 hover:bg-purple-600/30 transition-all">
+                <i class="fa-solid fa-rotate-left mr-1"></i> Show All Categories
+            </button>
+        </div>
+
+        <!-- Category Grid -->
+        <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+            <!-- Dynamically populated via JS -->
+        </div>
+    </section>
+
+    <!-- Main Content Grid -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-6">
+        <div class="flex items-center justify-between mb-6">
+            <div id="section-title-wrapper">
+                <h2 id="feed-title" class="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+                    <i class="fa-solid fa-fire text-amber-500"></i> Featured Facts
+                </h2>
+                <p id="feed-subtitle" class="text-slate-400 text-sm mt-1">Handpicked unbelievable facts guaranteed to amaze you</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="results-count" class="text-xs text-slate-400 font-medium"></span>
+            </div>
+        </div>
+
+        <!-- Facts Grid Container -->
+        <div id="facts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards populated dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden py-20 text-center">
+            <div class="w-20 h-20 mx-auto rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 text-3xl mb-4">
+                <i class="fa-solid fa-face-confused"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">No facts found</h3>
+            <p class="text-slate-400 text-sm max-w-md mx-auto mb-6">We couldn't find any facts matching your search or filter criteria. Try searching for something else.</p>
+            <button onclick="resetFilter()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition-all shadow-lg shadow-purple-600/25">
+                Reset Search & Filters
+            </button>
+        </div>
+    </main>
+
+    <!-- Trending Section -->
+    <section id="trending" class="py-16 bg-slate-900/40 border-t border-b border-slate-900 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+                        <i class="fa-solid fa-chart-line text-cyan-400"></i> Most Popular This Week
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-1">The facts everyone is reading and sharing right now</p>
+                </div>
+            </div>
+            <div id="trending-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Trending cards populated via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-br from-slate-900 to-slate-900/80 border border-slate-800/80 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl">
+            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="max-w-2xl relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-wider">
+                    <i class="fa-solid fa-globe"></i> About Factora
+                </div>
+                <h3 class="text-3xl font-extrabold text-white mb-4">Feed your curiosity with verified knowledge.</h3>
+                <p class="text-slate-300 text-base leading-relaxed mb-6">
+                    Factora was created for lifelong learners, trivia lovers, and curious minds. Our mission is to make fascinating scientific, historical, and cosmic facts engaging, fast, and accessible in a modern web experience.
+                </p>
+                <div class="flex flex-wrap gap-4 text-sm text-slate-400 font-medium">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> 100% Fact-Checked</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Zero Clutter</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Saved Locally</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div class="space-y-4 md:col-span-1">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center">
+                        <i class="fa-solid fa-lightbulb text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-extrabold tracking-tight text-white">FACTOR<span class="text-purple-500">A</span></span>
+                </div>
+                <p class="text-slate-400 text-sm">Discovering the most astonishing truths of our universe, one fact at a time.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Quick Links</h4>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li><a href="#" onclick="resetFilter()" class="hover:text-purple-400 transition-colors">Home Feed</a></li>
+                    <li><a href="#categories" class="hover:text-purple-400 transition-colors">Categories</a></li>
+                    <li><a href="#trending" class="hover:text-purple-400 transition-colors">Trending Facts</a></li>
+                    <li><a href="#" onclick="openBookmarksModal()" class="hover:text-purple-400 transition-colors">Saved Facts</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Top Domains</h4>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li><button onclick="filterByCategory('Space')" class="hover:text-purple-400 transition-colors">🌌 Space & Cosmos</button></li>
+                    <li><button onclick="filterByCategory('Science')" class="hover:text-purple-400 transition-colors">🔬 Modern Science</button></li>
+                    <li><button onclick="filterByCategory('History')" class="hover:text-purple-400 transition-colors">📜 Ancient History</button></li>
+                    <li><button onclick="filterByCategory('Human Body')" class="hover:text-purple-400 transition-colors">🧠 Human Body & Mind</button></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Stay Curious</h4>
+                <p class="text-slate-400 text-sm mb-4">Get a mind-blowing fact delivered instantly via our random generator.</p>
+                <button onclick="triggerRandomFactModal()" class="w-full py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-purple-400 hover:text-white hover:border-purple-500 font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-dice mr-2"></i> Random Fact Generator
+                </button>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
+            <p>&copy; 2026 Factora. Built for curious minds.</p>
+            <p class="mt-2 sm:mt-0">Designed with modern vanilla web tech.</p>
+        </div>
+    </footer>
+
+    <!-- Fact Detail Modal -->
+    <div id="fact-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div id="modal-content" class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 relative shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <button onclick="closeFactModal()" aria-label="Close modal" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modal-body">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Random Fact Modal -->
+    <div id="random-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div id="random-modal-content" class="bg-gradient-to-br from-slate-900 to-indigo-950/60 border border-purple-500/30 rounded-3xl max-w-lg w-full p-6 sm:p-8 relative shadow-2xl transform scale-95 opacity-0 transition-all duration-300 text-center">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xl mb-4">
+                <i class="fa-solid fa-dice"></i>
+            </div>
+            <span class="text-xs uppercase font-bold tracking-widest text-purple-400 mb-2 block" id="rand-modal-cat">Category</span>
+            <h3 class="text-2xl font-bold text-white mb-4" id="rand-modal-title">Fact Title</h3>
+            <p class="text-slate-300 text-base leading-relaxed mb-6" id="rand-modal-desc">Fact description goes here...</p>
+            <div class="flex items-center justify-center gap-3">
+                <button onclick="triggerRandomFactModal()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition-all shadow-lg shadow-purple-600/30">
+                    <i class="fa-solid fa-rotate mr-1"></i> Another Random Fact
+                </button>
+                <button onclick="closeRandomModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition-all">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookmarks Modal -->
+    <div id="bookmarks-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div id="bookmarks-modal-content" class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 relative shadow-2xl transform scale-95 opacity-0 transition-all duration-300 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bookmark text-purple-400"></i> Saved Facts (<span id="saved-count">0</span>)
+                </h3>
+                <button onclick="closeBookmarksModal()" aria-label="Close bookmarks modal" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="bookmarks-list" class="overflow-y-auto flex-grow py-4 space-y-4 pr-1">
+                <!-- Bookmarked facts populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-purple-500/40 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300">
+        <div class="w-7 h-7 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <span id="toast-msg" class="text-sm font-medium">Fact copied to clipboard!</span>
+    </div>
+
+    <!-- JavaScript Application -->
+    <script>
+        // Database of Facts spanning all 8 required categories
+        const factsData = [
+            {
+                id: 1,
+                title: "Neutron Star Density",
+                category: "Space",
+                icon: "fa-meteor",
+                color: "from-purple-500 to-indigo-600",
+                summary: "A single teaspoon of a neutron star would weigh approximately 6 billion tons on Earth.",
+                details: "Neutron stars are the collapsed cores of massive supergiant stars. Their gravitational pull is so extreme that protons and electrons are crushed together into neutrons, resulting in matter of unfathomable density.",
+                trending: true,
+                reads: "14.2k"
+            },
+            {
+                id: 2,
+                title: "Water-Bending Tardigrades",
+                category: "Animals",
+                icon: "fa-paw",
+                color: "from-emerald-500 to-teal-600",
+                summary: "Tardigrades (water bears) can survive the vacuum of space and temperatures as low as -272°C.",
+                details: "When faced with extreme environmental stress, tardigrades enter a dehydrated state called tun, expelling nearly all body water and slowing their metabolic rate to 0.01% of normal.",
+                trending: true,
+                reads: "18.5k"
+            },
+            {
+                id: 3,
+                title: "Banana Radioactivity",
+                category: "Science",
+                icon: "fa-atom",
+                color: "from-cyan-500 to-blue-600",
+                summary: "Bananas contain high amounts of potassium and are naturally slightly radioactive.",
+                details: "Bananas contain the isotope Potassium-40. While technically radioactive, the dose is extremely minuscule and harmless; scientists even use the 'Banana Equivalent Dose' as a humorous metric for radiation exposure.",
+                trending: false,
+                reads: "9.1k"
+            },
+            {
+                id: 4,
+                title: "Cleopatra's Timeline",
+                category: "History",
+                icon: "fa-landmark",
+                color: "from-amber-500 to-orange-600",
+                summary: "Cleopatra lived closer in time to the launch of the iPhone than to the building of the Great Pyramid of Giza.",
+                details: "The Great Pyramid of Giza was completed around 2560 BCE, whereas Cleopatra died in 30 BCE. The construction of the pyramids is over 2,500 years further from Cleopatra's era than smartphones are from her today.",
+                trending: true,
+                reads: "25.4k"
+            },
+            {
+                id: 5,
+                title: "Quantum Brain Neurons",
+                category: "Human Body",
+                icon: "fa-brain",
+                color: "from-pink-500 to-rose-600",
+                summary: "The human brain generates enough electricity to power a small LED light bulb (about 20 watts).",
+                details: "While you are awake, your billions of interconnected neurons produce continuous electrical impulses. Even during deep sleep, your brain activity remains remarkably vigorous.",
+                trending: false,
+                reads: "11.8k"
+            },
+            {
+                id: 6,
+                title: "Time Dilation on Earth",
+                category: "Mystery",
+                icon: "fa-compass",
+                color: "from-violet-600 to-fuchsia-600",
+                summary: "Your head actually ages slightly faster than your feet due to Einstein's theory of general relativity.",
+                details: "Because your head is further from Earth's center of mass than your feet, gravity is marginally weaker up top, causing time to tick forward at a infinitesimal faster rate.",
+                trending: false,
+                reads: "8.3k"
+            },
+            {
+                id: 7,
+                title: "The Oldest Living Tree",
+                category: "World",
+                icon: "fa-earth-americas",
+                color: "from-green-500 to-emerald-700",
+                summary: "Certain clonal tree colonies have root systems that have been alive for over 80,000 years.",
+                details: "Pando, a giant colony of quaking aspens in Utah, shares an identical root system and is considered one of the oldest and heaviest living organisms on Earth.",
+                trending: false,
+                reads: "10.4k"
+            },
+            {
+                id: 8,
+                title: "Quantum Entanglement",
+                category: "Technology",
+                icon: "fa-microchip",
+                color: "from-sky-500 to-indigo-600",
+                summary: "Entangled particles instantly influence each other across the universe, baffling Einstein who called it 'spooky action'.",
+                details: "When two particles become entangled, measuring the state of one instantaneously determines the state of the other, regardless of whether they are separated by millimeters or billions of light-years.",
+                trending: true,
+                reads: "19.9k"
+            },
+            {
+                id: 9,
+                title: "Octopus Three Hearts",
+                category: "Animals",
+                icon: "fa-fish",
+                color: "from-teal-500 to-cyan-700",
+                summary: "An octopus has three hearts, nine brains, and blue blood.",
+                details: "Two hearts pump blood through the gills, while the third pumps it to the rest of the body. Interestingly, when an octopus swims, the main heart actually stops beating!",
+                trending: false,
+                reads: "12.7k"
+            },
+            {
+                id: 10,
+                title: "Diamond Raining Giants",
+                category: "Space",
+                icon: "fa-gem",
+                color: "from-purple-600 to-pink-600",
+                summary: "It literally rains solid diamonds on the gas giant planets Jupiter and Saturn.",
+                details: "Atmospheric storms on Saturn and Jupiter turn methane into soot, which as it falls and encounters immense atmospheric pressure, hardens into chunks of pure diamond.",
+                trending: false,
+                reads: "16.1k"
+            },
+            {
+                id: 11,
+                title: "Roman Concrete Durability",
+                category: "History",
+                icon: "fa-shield-halved",
+                color: "from-amber-600 to-yellow-600",
+                summary: "Ancient Roman concrete actually gets stronger when exposed to seawater over thousands of years.",
+                details: "Unlike modern concrete that degrades over time, Roman builders mixed volcanic ash and lime with seawater, triggering a chemical reaction that heals micro-cracks continuously.",
+                trending: false,
+                reads: "13.0k"
+            },
+            {
+                id: 12,
+                title: "Stomach Lining Renewal",
+                category: "Human Body",
+                icon: "fa-heart-pulse",
+                color: "from-rose-500 to-red-600",
+                summary: "Your stomach lining completely generates a new layer of cells every 3 to 4 days to avoid digesting itself.",
+                details: "Stomach acid is strong enough to dissolve razor blades. To protect itself from this corrosive environment, the stomach constantly secretes thick mucus and rapidly replaces its lining cells.",
+                trending: false,
+                reads: "15.3k"
+            }
+        ];
+
+        const categories = [
+            { name: "All", icon: "fa-border-all" },
+            { name: "Science", icon: "fa-atom" },
+            { name: "Space", icon: "fa-meteor" },
+            { name: "History", icon: "fa-landmark" },
+            { name: "Technology", icon: "fa-microchip" },
+            { name: "Animals", icon: "fa-paw" },
+            { name: "Human Body", icon: "fa-brain" },
+            { name: "World", icon: "fa-earth-americas" },
+            { name: "Mystery", icon: "fa-compass" }
+        ];
+
+        let activeCategory = "All";
+        let searchQuery = "";
+        let bookmarks = JSON.parse(localStorage.getItem('factora_bookmarks')) || [];
+
+        // Initialize application on DOM load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderFacts();
+            renderTrending();
+            updateBookmarkBadge();
+            setupEventListeners();
+            initTheme();
+        });
+
+        function setupEventListeners() {
+            const searchInput = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.trim();
+                if (searchQuery.length > 0) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+                renderFacts();
+            });
+
+            // Mobile menu toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Theme toggle
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.add('hidden');
+        }
+
+        function initTheme() {
+            // Default dark mode is active via html class 'dark'
+            const isDark = document.documentElement.classList.contains('dark');
+            if (!isDark) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.style.colorScheme = 'light';
+            } else {
+                html.classList.add('dark');
+                html.style.colorScheme = 'dark';
+            }
+        }
+
+        function renderCategories() {
+            const grid = document.getElementById('category-grid');
+            grid.innerHTML = categories.map(cat => {
+                const isActive = activeCategory === cat.name;
+                return `
+                    <button onclick="filterByCategory('${cat.name}')" 
+                        class="flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 group ${
+                            isActive 
+                            ? 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/30 scale-105' 
+                            : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900 hover:text-white'
+                        }">
+                        <div class="w-10 h-10 rounded-xl mb-2 flex items-center justify-center text-lg ${isActive ? 'bg-white/20 text-white' : 'bg-slate-800 text-purple-400 group-hover:scale-110 transition-transform'}">
+                            <i class="fa-solid ${cat.icon}"></i>
+                        </div>
+                        <span class="text-xs font-semibold tracking-wide">${cat.name}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function filterByCategory(catName) {
+            activeCategory = catName;
+            searchQuery = '';
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            
+            renderCategories();
+            renderFacts();
+
+            // Update feed titles
+            const titleEl = document.getElementById('feed-title');
+            const subEl = document.getElementById('feed-subtitle');
+            const allBtn = document.getElementById('all-cats-btn');
+
+            if (catName === "All") {
+                titleEl.innerHTML = `<i class="fa-solid fa-fire text-amber-500"></i> Featured Facts`;
+                subEl.textContent = "Handpicked unbelievable facts guaranteed to amaze you";
+                allBtn.classList.add('hidden');
+            } else {
+                titleEl.innerHTML = `<i class="fa-solid fa-filter text-purple-500"></i> ${catName} Facts`;
+                subEl.textContent = `Browsing curated facts under ${catName}`;
+                allBtn.classList.remove('hidden');
+            }
+
+            // Scroll to main feed
+            document.getElementById('facts-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function resetFilter() {
+            activeCategory = "All";
+            searchQuery = "";
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            renderCategories();
+            renderFacts();
+            document.getElementById('feed-title').innerHTML = `<i class="fa-solid fa-fire text-amber-500"></i> Featured Facts`;
+            document.getElementById('feed-subtitle').textContent = "Handpicked unbelievable facts guaranteed to amaze you";
+            document.getElementById('all-cats-btn').classList.add('hidden');
+        }
+
+        function quickSearch(keyword) {
+            document.getElementById('search-input').value = keyword;
+            searchQuery = keyword.toLowerCase();
+            document.getElementById('clear-search').classList.remove('hidden');
+            renderFacts();
+            document.getElementById('facts-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            searchQuery = '';
+            renderFacts();
+        }
+
+        function handleSearch() {
+            const input = document.getElementById('search-input').value.trim();
+            searchQuery = input.toLowerCase();
+            if(searchQuery) {
+                document.getElementById('clear-search').classList.remove('hidden');
+            }
+            renderFacts();
+        }
+
+        function renderFacts() {
+            const grid = document.getElementById('facts-grid');
+            const emptyState = document.getElementById('empty-state');
+            const countEl = document.getElementById('results-count');
+
+            let filtered = factsData.filter(fact => {
+                const matchesCat = activeCategory === "All" || fact.category === activeCategory;
+                const matchesQuery = searchQuery === "" || 
+                    fact.title.toLowerCase().includes(searchQuery) || 
+                    fact.summary.toLowerCase().includes(searchQuery) || 
+                    fact.details.toLowerCase().includes(searchQuery) ||
+                    fact.category.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesQuery;
+            });
+
+            countEl.textContent = `${filtered.length} facts found`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(fact => {
+                const isBookmarked = bookmarks.some(b => b.id === fact.id);
+                return `
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300 group">
+                        <div>
+                            <!-- Card Top Metadata -->
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700/80 text-purple-400 text-xs font-semibold tracking-wider uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-tag text-[10px]"></i> ${fact.category}
+                                </span>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="toggleBookmark(${fact.id})" aria-label="Bookmark fact" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-800 flex items-center justify-center ${isBookmarked ? 'text-purple-400 bg-purple-500/10 border border-purple-500/30' : 'text-slate-400 hover:text-white'} transition-colors">
+                                        <i class="fa-${isBookmarked ? 'solid' : 'regular'} fa-bookmark text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Fact Title & Summary -->
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">${fact.title}</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">${fact.summary}</p>
+                        </div>
+
+                        <!-- Card Actions Footer -->
+                        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                            <button onclick="openFactModal(${fact.id})" class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 text-sm font-semibold transition-colors">
+                                <span>Read More</span>
+                                <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                            <div class="flex items-center gap-1">
+                                <button onclick="copyFact(${fact.id})" title="Copy Fact" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                                    <i class="fa-regular fa-copy text-xs"></i>
+                                </button>
+                                <button onclick="shareFact(${fact.id})" title="Share Fact" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                                    <i class="fa-solid fa-share-nodes text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTrending() {
+            const trendingGrid = document.getElementById('trending-grid');
+            const trendingFacts = factsData.filter(f => f.trending);
+
+            trendingGrid.innerHTML = trendingFacts.map(fact => {
+                const isBookmarked = bookmarks.some(b => b.id === fact.id);
+                return `
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between hover:border-cyan-500/50 transition-all duration-300 group">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase">
+                                    🔥 Trending • ${fact.reads} reads
+                                </span>
+                                <button onclick="toggleBookmark(${fact.id})" aria-label="Bookmark trending fact" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center ${isBookmarked ? 'text-purple-400' : 'text-slate-400 hover:text-white'} transition-colors">
+                                    <i class="fa-${isBookmarked ? 'solid' : 'regular'} fa-bookmark text-sm"></i>
+                                </button>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">${fact.title}</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-6">${fact.summary}</p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+                            <button onclick="openFactModal(${fact.id})" class="text-cyan-400 hover:text-cyan-300 text-sm font-semibold flex items-center gap-1.5">
+                                Read Full Fact <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                            <div class="flex items-center gap-1">
+                                <button onclick="copyFact(${fact.id})" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white">
+                                    <i class="fa-regular fa-copy text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Modal Controls
+        function openFactModal(id) {
+            const fact = factsData.find(f => f.id === id);
+            if (!fact) return;
+
+            const modalBody = document.getElementById('modal-body');
+            const isBookmarked = bookmarks.some(b => b.id === fact.id);
+
+            modalBody.innerHTML = `
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold uppercase mb-4">
+                    <i class="fa-solid fa-tag"></i> ${fact.category}
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-4">${fact.title}</h2>
+                <div class="space-y-4 text-slate-300 text-base leading-relaxed mb-8">
+                    <p class="font-medium text-slate-200 bg-slate-800/50 p-4 rounded-2xl border border-slate-800">${fact.summary}</p>
+                    <p>${fact.details}</p>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <button onclick="copyFact(${fact.id})" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold transition-all flex items-center gap-2">
+                            <i class="fa-regular fa-copy"></i> Copy Fact
+                        </button>
+                        <button onclick="shareFact(${fact.id})" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-share-nodes"></i> Share
+                        </button>
+                    </div>
+                    <button onclick="toggleBookmark(${fact.id}); openFactModal(${fact.id});" class="px-4 py-2.5 rounded-xl ${isBookmarked ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-300'} text-sm font-semibold transition-all flex items-center gap-2">
+                        <i class="fa-${isBookmarked ? 'solid' : 'regular'} fa-bookmark"></i> ${isBookmarked ? 'Saved' : 'Save Fact'}
+                    </button>
+                </div>
+            `;
+
+            const modal = document.getElementById('fact-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeFactModal() {
+            const modal = document.getElementById('fact-modal');
+            const content = document.getElementById('modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Random Fact Generator Modal
+        function triggerRandomFactModal() {
+            const randomIndex = Math.floor(Math.random() * factsData.length);
+            const randomFact = factsData[randomIndex];
+
+            document.getElementById('rand-modal-cat').textContent = randomFact.category;
+            document.getElementById('rand-modal-title').textContent = randomFact.title;
+            document.getElementById('rand-modal-desc').textContent = randomFact.summary;
+
+            const modal = document.getElementById('random-modal');
+            const content = document.getElementById('random-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeRandomModal() {
+            const modal = document.getElementById('random-modal');
+            const content = document.getElementById('random-modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Bookmarks Management & Modal
+        function toggleBookmark(id) {
+            const fact = factsData.find(f => f.id === id);
+            const index = bookmarks.findIndex(b => b.id === id);
+
+            if (index > -1) {
+                bookmarks.splice(index, 1);
+                showToast("Fact removed from saved bookmarks");
+            } else {
+                bookmarks.push(fact);
+                showToast("Fact saved successfully!");
+            }
+
+            localStorage.setItem('factora_bookmarks', JSON.stringify(bookmarks));
+            updateBookmarkBadge();
+            renderFacts();
+            renderTrending();
+        }
+
+        function updateBookmarkBadge() {
+            const badge = document.getElementById('bookmark-badge');
+            badge.textContent = bookmarks.length;
+        }
+
+        function openBookmarksModal() {
+            const listEl = document.getElementById('bookmarks-list');
+            document.getElementById('saved-count').textContent = bookmarks.length;
+
+            if (bookmarks.length === 0) {
+                listEl.innerHTML = `
+                    <div class="py-12 text-center text-slate-400">
+                        <i class="fa-regular fa-bookmark text-4xl mb-3 text-slate-600"></i>
+                        <p class="text-base font-semibold text-white">No saved facts yet</p>
+                        <p class="text-sm text-slate-500 mt-1">Click the bookmark icon on any fact card to save it for later.</p>
+                    </div>
+                `;
+            } else {
+                listEl.innerHTML = bookmarks.map(fact => `
+                    <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 flex items-start justify-between gap-4">
+                        <div>
+                            <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider">${fact.category}</span>
+                            <h4 class="text-base font-bold text-white mt-1">${fact.title}</h4>
+                            <p class="text-slate-300 text-sm mt-1 line-clamp-2">${fact.summary}</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <button onclick="openFactModal(${fact.id}); closeBookmarksModal();" class="w-8 h-8 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center" title="View Fact">
+                                <i class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                            <button onclick="toggleBookmark(${fact.id}); openBookmarksModal();" class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 flex items-center justify-center" title="Remove">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const modal = document.getElementById('bookmarks-modal');
+            const content = document.getElementById('bookmarks-modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeBookmarksModal() {
+            const modal = document.getElementById('bookmarks-modal');
+            const content = document.getElementById('bookmarks-modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Copy and Share Utilities
+        function copyFact(id) {
+            const fact = factsData.find(f => f.id === id);
+            if (!fact) return;
+
+            const textToCopy = `💡 Factora Insight: ${fact.title}\n\n${fact.summary}\n\nDiscover more mind-blowing facts on Factora!`;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showToast("Fact copied to clipboard!");
+                }).catch(() => {
+                    fallbackCopy(textToCopy);
+                });
+            } else {
+                fallbackCopy(textToCopy);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Fact copied to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy fact.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function shareFact(id) {
+            const fact = factsData.find(f => f.id === id);
+            if (!fact) return;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: `Factora: ${fact.title}`,
+                    text: fact.summary,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                copyFact(id);
+            }
+        }
+
+        // Toast notification system
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            msgEl.textContent = message;
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
